@@ -1,0 +1,185 @@
+You will be provided with a folder of images: {image_folder}
+
+For each image in the folder, answer the following questions and present the results in a table format. The first column should be the image file name (serving as the image ID), and subsequent columns should correspond to each question.
+
+Questions:
+
+[
+    {
+        "number": 1,
+        "type": "text",
+        "question": "What is the name of the facebook group?",
+        "options": []
+    },
+    {
+        "number": 2,
+        "type": "long_text",
+        "question": "What is the text of this post?",
+        "options": []
+    },
+    {
+        "number": 3,
+        "type": "number",
+        "question": "How many likes does this post have?",
+        "options": []
+    },
+    {
+        "number": 4,
+        "type": "long_text",
+        "question": "What are the responses?",
+        "options": []
+    },
+    {
+        "number": 5,
+        "type": "yes_no",
+        "question": "Does it have imagery?",
+        "options": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "number": 6,
+        "type": "long_text",
+        "question": "Describe the imagery in the post",
+        "options": []
+    },
+    {
+        "number": 7,
+        "type": "text",
+        "question": "What is the name of the poster?",
+        "options": []
+    },
+    {
+        "number": 8,
+        "type": "yes_no_other",
+        "question": "Is it a reposting of another post? From who or what list?",
+        "options": [
+            "Yes",
+            "No",
+            "Other (please specify)"
+        ]
+    },
+    {
+        "number": 9,
+        "type": "date",
+        "question": "What is the date of the post?",
+        "options": []
+    },
+    {
+        "number": 10,
+        "type": "multiple_choice",
+        "question": "Does the post generally support or oppose renewable energy?",
+        "options": [
+            "Support",
+            "Oppose",
+            "Neutral",
+            "Unclear"
+        ]
+    },
+    {
+        "number": 11,
+        "type": "yes_no_text",
+        "question": "Does the post refer to a specific energy project? What is the name of the project?",
+        "options": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "number": 12,
+        "type": "multiple_choice_other",
+        "question": "What are the key issues raised by this post? Choose one of the following or respond other",
+        "options": [
+            "Scenic beauty: impacts on views/beauty/aesthetic quality of the land or seascape",
+            "Property value: impacts on property value in a negative or positive way",
+            "Noise: discusses noise of construction or operation of project",
+            "Dangerous: discusses generalized dangers of project (broken turbine blades, etc.)",
+            "Threat to wildlife: discusses a threat to animals, plants, or ecosystem",
+            "Economy: discusses economic impacts of project, e.g. job creation/loss, taxes, other revenue",
+            "Zoning: discusses zoning rules and construction permissions as related to project",
+            "Health impacts: discusses health impacts, including mental health, e.g. from flicker, noise, etc.",
+            "Roads/infrastructure: discusses impacts to roads or other public infrastructure",
+            "Future or character of community: discusses vague concerns about character or future of community, livlihoods, etc.",
+            "Other"
+        ]
+    },
+    {
+        "number": 13,
+        "type": "single_choice",
+        "question": "What’s the single core issue raised by the post?",
+        "options": [
+            "Scenic beauty",
+            "Property value",
+            "Noise",
+            "Dangerous",
+            "Threat to wildlife",
+            "Economy",
+            "Zoning",
+            "Health impacts",
+            "Roads/infrastructure",
+            "Future of character of community"
+        ]
+    },
+    {
+        "number": 14,
+        "type": "yes_no",
+        "question": "Overall, does the post make a principally economic argument for or against renewable energy?",
+        "options": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "number": 15,
+        "type": "single_choice",
+        "question": "CARDS 2.0: What is the major claim being made in the post?",
+        "options": [
+            "Global warming is not happening",
+            "Human greenhouse gasses are not causing global warming",
+            "Climate impacts are not bad",
+            "Climate solutions won’t work",
+            "Climate movement/science is unreliable"
+        ]
+    },
+    {
+        "number": 16,
+        "type": "multiple_choice_conditional",
+        "question": "If the answer to Question 15 is \"Climate movement/science is unreliable\", does the post indicate:",
+        "options": [
+            "The science is unreliable",
+            "Movement is unreliable",
+            "Climate change is a conspiracy"
+        ],
+        "condition": {
+            "question_number": 15,
+            "answer": "Climate movement/science is unreliable"
+        }
+    },
+    {
+        "number": 17,
+        "type": "multiple_choice_conditional",
+        "question": "If answer to Question 15 is \"Climate solutions won’t work/aren’t needed\", do they say that",
+        "options": [
+            "climate change policies are harmful",
+            "Climate policies are ineffective",
+            "Mitigation policies are unnecessary/secondary",
+            "Climate policy is too difficult",
+            "Climate friendly alternatives won’t work",
+            "We need fossil fuels",
+            "No need for more action"
+        ],
+        "condition": {
+            "question_number": 15,
+            "answer": "Climate solutions won’t work"
+        }
+    }
+]
+
+Output Format:
+
+| Image ID | Question 1 | Question 2 | ... | Question 17 |
+|---|---|---|---|---|
+| image_1.jpg | Answer 1 | Answer 2 | ... | Answer 17 |
+| image_2.png | Answer 1 | Answer 2 | ... | Answer 17 |
+| ... | ... | ... | ... | ... |

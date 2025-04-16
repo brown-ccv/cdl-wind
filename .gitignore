@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.cache/
+assets/
+.npm/
+.codeoss/
+.local/
+.vscode/
+.config/
+.sudo_as_admin_successful
+.profile
+.bashrc
+.bash_logout
+.bash_history
+.ipython/profile_default/history.sqlite
+.docker/config.json
+README-cloudshell.txt
+.env
+.ipython/profile_default/startup/README
+.rustup/settings.toml
+uv.lock
