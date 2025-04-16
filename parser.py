@@ -1,0 +1,68 @@
+import json
+import re
+from pprint import pp
+
+def parse_json_like_output(output_text):
+    """
+    Parses a JSON-like string into a Python dictionary.
+
+    Args:
+        output_text: The string output from the AI, resembling a JSON dictionary.
+
+    Returns:
+        A Python dictionary representing the parsed data, or None if parsing fails.
+    """
+    try:
+        # Remove any leading/trailing whitespace and newlines
+        output_text = output_text.strip()
+
+        # Handle cases where the AI might include extra characters or newlines
+        # before or after the curly braces, or markdown code blocks.
+        if output_text.startswith("```json") and output_text.endswith("```"):
+            output_text = output_text[7:-3].strip()
+        elif not output_text.startswith("{") or not output_text.endswith("}"):
+            # Attempt to find the dictionary within the string
+            match = re.search(r"\{.*\}", output_text, re.DOTALL)
+            if match:
+                output_text = match.group(0)
+            else:
+                print("Error: Could not find a dictionary within the output.")
+                return None
+
+        # Replace single quotes with double quotes for valid JSON
+        output_text = output_text.replace("'", '"')
+
+        # Load the string as a JSON object
+        data = json.loads(output_text)
+        return data
+
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON format: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
+
+
+def process_response(response_text):
+    """
+    Processes the raw response text from the AI, parses it into a dictionary,
+    and returns a structured dictionary.
+
+    Args:
+        response_text: The raw text response from the AI.
+
+    Returns:
+        A dictionary containing the parsed data, or None if parsing fails.
+    """
+    parsed_data = parse_json_like_output(response_text)
+    if parsed_data:
+        return parsed_data
+    else:
+        return None
+
+
+if __name__ == "__main__":
+    txt = '```json\n{\n    "Image ID": "75.png",\n    "1": "Protect Our Coast - NJ Community Group",\n    "2": "To those who love boating and fishing on Long Island and along the entire United States coastline, even extending into our Great Lakes and the Gulf of Mexico. ... See more",\n    "3": "38",\n    "4": "Cannot determine from image",\n    "5": "Yes",\n    "6": "The image shows a large body of water with many wind turbines in the background.",\n    "7": "Mike Jacobs",\n    "8": "Yes",\n    "9": "January 25, 2024",\n    "10": "Oppose",\n    "11": "No",\n    "12": "Scenic beauty: impacts on views/beauty/aesthetic quality of the land or seascape",\n    "13": "Scenic beauty",\n    "14": "No",\n    "15": "Climate solutions won’t work",\n    "16": "Cannot determine from image",\n    "17": "Climate policies are ineffective"\n}\n```'
+    pp(process_response(txt))
+
