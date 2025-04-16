@@ -8,6 +8,8 @@ requires-python = ">=3.12"
 dependencies = [
     "google-genai>=1.10.0",
     "ipython>=9.1.0",
+    "pandas>=2.2.3",
     "pillow>=11.2.1",
+    "ruff>=0.11.5",
     "tqdm>=4.67.1",
 ]
