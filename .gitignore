@@ -27,3 +27,6 @@ README-cloudshell.txt
 .ipython/profile_default/startup/README
 .rustup/settings.toml
 uv.lock
+.lesshst
+subassets/
+.gitconfig
