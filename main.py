@@ -1,18 +1,25 @@
 import os
 import argparse
 import base64
-import json
-from google import genai
-from google.genai import types
-from PIL import Image
 import io
 from enum import StrEnum
+from pprint import pp
+
+import pandas as pd
+from PIL import Image
+from tqdm import tqdm
+from google import genai
+from google.genai import types
+
+from parser import process_response, convert_dicts_to_dataframe
+
 
 class GeminiModel(StrEnum):
     """
     Enumeration of available Google Gemini model names (as of approx. April 2025).
     Members behave like strings, representing the model identifier directly.
     """
+
     # --- Gemini 2.5 ---
     PRO_2_5_PREVIEW = "gemini-2.5-pro-preview-03-25"
     # --- Gemini 2.0 ---
@@ -25,10 +32,14 @@ class GeminiModel(StrEnum):
     # --- Gemini 1.5 ---
     PRO_1_5 = "gemini-1.5-pro"
     PRO_1_5_LATEST = "gemini-1.5-pro-latest"
-    PRO_1_5_002 = "gemini-1.5-pro-002" # Using only the latest specific stable for brevity
+    PRO_1_5_002 = (
+        "gemini-1.5-pro-002"  # Using only the latest specific stable for brevity
+    )
     FLASH_1_5 = "gemini-1.5-flash"
     FLASH_1_5_LATEST = "gemini-1.5-flash-latest"
-    FLASH_1_5_002 = "gemini-1.5-flash-002" # Using only the latest specific stable for brevity
+    FLASH_1_5_002 = (
+        "gemini-1.5-flash-002"  # Using only the latest specific stable for brevity
+    )
     FLASH_1_5_8B = "gemini-1.5-flash-8b"
     FLASH_1_5_8B_LATEST = "gemini-1.5-flash-8b-latest"
     FLASH_1_5_8B_001 = "gemini-1.5-flash-8b-001"
@@ -38,7 +49,6 @@ class GeminiModel(StrEnum):
     # --- Other Models ---
     AQA = "models/aqa"
 
-    
 
 def load_image(image_path):
     """Loads an image and returns it as a base64 encoded string."""
@@ -52,6 +62,7 @@ def load_image(image_path):
         print(f"Error loading image {image_path}: {e}")
         return None
 
+
 def load_text_file(file_path):
     """Loads the content of a text file."""
     try:
@@ -61,19 +72,24 @@ def load_text_file(file_path):
         print(f"Error loading file {file_path}: {e}")
         return None
 
+
 def generate_analysis(client, model, image_folder, instructions, prompt_template):
     """Generates analysis for images in a folder based on instructions and prompt."""
-    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    image_files = [
+        f
+        for f in os.listdir(image_folder)
+        if os.path.isfile(os.path.join(image_folder, f))
+    ]
     results = []
 
-    for image_file in image_files:
+    for image_file in tqdm(image_files, desc="Processing images"):
         image_path = os.path.join(image_folder, image_file)
         encoded_image = load_image(image_path)
         if encoded_image is None:
             continue
 
-        prompt_text = prompt_template.format(image_folder=image_folder)
-        questions_data = json.loads(prompt_text.split("Questions:")[1].split("Output Format:")[0].strip())
+        # Use the entire prompt_template as prompt_text
+        prompt_text = prompt_template
 
         contents = [
             types.Content(
@@ -81,7 +97,11 @@ def generate_analysis(client, model, image_folder, instructions, prompt_template
                 parts=[
                     types.Part(text=instructions),
                     types.Part(text=prompt_text),
-                    types.Part(inline_data=types.Blob(mime_type="image/png", data=base64.b64decode(encoded_image))),
+                    types.Part(
+                        inline_data=types.Blob(
+                            mime_type="image/png", data=base64.b64decode(encoded_image)
+                        )
+                    ),
                 ],
             )
         ]
@@ -92,10 +112,18 @@ def generate_analysis(client, model, image_folder, instructions, prompt_template
             max_output_tokens=8192,
             response_modalities=["TEXT"],
             safety_settings=[
-                types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF"),
+                types.SafetySetting(
+                    category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"
+                ),
+                types.SafetySetting(
+                    category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"
+                ),
+                types.SafetySetting(
+                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"
+                ),
+                types.SafetySetting(
+                    category="HARM_CATEGORY_HARASSMENT", threshold="OFF"
+                ),
             ],
         )
 
@@ -103,62 +131,78 @@ def generate_analysis(client, model, image_folder, instructions, prompt_template
             response = client.models.generate_content(
                 model=model, contents=contents, config=generate_content_config
             )
-            
+
             # Process the response
             response_text = response.text
-            
+
             # Here you would parse the response_text to extract the answers
             # This part depends on how the model formats its response
             # For now, we'll just store the raw response
-            answers = {
-                "Image ID": image_file,
-                "Raw Response": response_text
-            }
-            
-            results.append(answers)
+            _result = process_response(response_text)
+            if _result:
+                _result["id"] = image_file
+                del _result["Image ID"]
+                pp(_result)
+                df = pd.DataFrame(_result, index=[0])
+                print(df)
+                # breakpoint()
+                results.append(_result)
+            else:
+                print(f"Failed to parse response for image: {image_file}")
 
         except Exception as e:
             print(f"Error processing image {image_file}: {e}")
 
     # Format and print the results
-    print("| Image ID | Raw Response |")
-    print("|---|---|")
-    for result in results:
-        print(f"| {result['Image ID']} | {result['Raw Response']} |")
+    results_df = convert_dicts_to_dataframe(results)
+    pp(results_df)
+    # breakpoint()
+
 
 def main():
     """Main function to run the image analysis."""
     model_choices = [model.value for model in GeminiModel]
     parser = argparse.ArgumentParser(description="Analyze images using Gemini API.")
-    parser.add_argument("--image_folder", default="assets", help="Path to the folder containing images.")
-    parser.add_argument("--instructions_file", default="instruction.txt", help="Path to the instructions text file.")
-    parser.add_argument("--prompt_file", default="prompt.txt", help="Path to the prompt text file.")
-    parser.add_argument("--project", default="get-think-tank-urls", help="GCP project ID")
+    parser.add_argument(
+        "--image-folder", default="assets", help="Path to the folder containing images."
+    )
+    parser.add_argument(
+        "--instructions-file",
+        default="instruction.txt",
+        help="Path to the instructions text file.",
+    )
+    parser.add_argument(
+        "--prompt-file", default="prompt.txt", help="Path to the prompt text file."
+    )
+    parser.add_argument(
+        "--project", default="get-think-tank-urls", help="GCP project ID"
+    )
     parser.add_argument("--location", default="us-central1", help="GCP location")
     parser.add_argument(
         "--model",
         default=GeminiModel.FLASH_2_0_STABLE.value,
-        required=True, # Make it mandatory for this simple example
+        required=False,  # Make it mandatory for this simple example
         choices=model_choices,
-        metavar="MODEL_IDENTIFIER", # Helps in the --help message
+        metavar="MODEL_IDENTIFIER",  # Helps in the --help message
         help=(
             "The Gemini model identifier to use. Choose from: "
             f"{', '.join(model_choices)}"
-        )
+        ),
     )
     args = parser.parse_args()
 
-    client = genai.Client(
-        vertexai=True, project=args.project, location=args.location
-    )
+    client = genai.Client(vertexai=True, project=args.project, location=args.location)
     model = args.model
     instructions = load_text_file(args.instructions_file)
     prompt_template = load_text_file(args.prompt_file)
 
     if instructions and prompt_template:
-        generate_analysis(client, model, args.image_folder, instructions, prompt_template)
+        generate_analysis(
+            client, model, args.image_folder, instructions, prompt_template
+        )
     else:
         print("Error: Could not load instructions or prompt.")
+
 
 if __name__ == "__main__":
     main()
