@@ -1,6 +1,10 @@
-You will be provided with a folder of images: {image_folder}
+You will be provided with a folder of images. For each image in the folder, analyze the image and answer the following questions. Present the results as a JSON-like string that can be easily parsed as a Python dictionary. The dictionary MUST have the following structure:
 
-For each image in the folder, answer the following questions and present the results in a table format. The first column should be the image file name (serving as the image ID), and subsequent columns should correspond to each question.
+*   The key "Image ID" MUST contain the image file name.
+*   The remaining keys MUST be the question numbers (1, 2, 3, ..., 17).
+*   The values MUST be the answers to the corresponding questions.
+
+Under NO circumstances should you include any introductory or explanatory text. Only provide the JSON-like string. If you cannot answer a question based on the image, respond with "Cannot determine from image".
 
 Questions:
 
@@ -175,11 +179,3 @@ Questions:
         }
     }
 ]
-
-Output Format:
-
-| Image ID | Question 1 | Question 2 | ... | Question 17 |
-|---|---|---|---|---|
-| image_1.jpg | Answer 1 | Answer 2 | ... | Answer 17 |
-| image_2.png | Answer 1 | Answer 2 | ... | Answer 17 |
-| ... | ... | ... | ... | ... |
