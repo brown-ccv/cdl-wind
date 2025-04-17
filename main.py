@@ -73,7 +73,7 @@ def load_text_file(file_path):
         return None
 
 
-def generate_analysis(client, model, image_folder, instructions, prompt_template):
+def generate_analysis(client, model, image_folder, instructions, prompt):
     """Generates analysis for images in a folder based on instructions and prompt."""
     image_files = [
         f
@@ -88,8 +88,8 @@ def generate_analysis(client, model, image_folder, instructions, prompt_template
         if encoded_image is None:
             continue
 
-        # Use the entire prompt_template as prompt_text
-        prompt_text = prompt_template
+        # Use the entire prompt as prompt_text
+        prompt_text = prompt
 
         contents = [
             types.Content(
@@ -194,11 +194,11 @@ def main():
     client = genai.Client(vertexai=True, project=args.project, location=args.location)
     model = args.model
     instructions = load_text_file(args.instructions_file)
-    prompt_template = load_text_file(args.prompt_file)
+    prompt = load_text_file(args.prompt_file)
 
-    if instructions and prompt_template:
+    if instructions and prompt:
         generate_analysis(
-            client, model, args.image_folder, instructions, prompt_template
+            client, model, args.image_folder, instructions, prompt
         )
     else:
         print("Error: Could not load instructions or prompt.")
