@@ -1,9 +1,12 @@
 import json
 import re
 from pprint import pp
+import logging
 
 import pandas as pd
 from functools import reduce
+
+logger = logging.getLogger(__name__)
 
 
 def parse_json_like_output(output_text):
@@ -30,7 +33,7 @@ def parse_json_like_output(output_text):
             if match:
                 output_text = match.group(0)
             else:
-                print("Error: Could not find a dictionary within the output.")
+                logger.error("Error: Could not find a dictionary within the output.")
                 return None
 
         # Replace single quotes with double quotes for valid JSON
@@ -40,11 +43,11 @@ def parse_json_like_output(output_text):
         data = json.loads(output_text)
         return data
 
-    except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON format: {e}")
+    except json.JSONDecodeError:
+        logger.error("Error: Invalid JSON format", exc_info=True)
         return None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+    except Exception:
+        logger.error("An unexpected error occurred", exc_info=True)
         return None
 
 
