@@ -61,6 +61,60 @@ class GeminiModel(StrEnum):
     AQA = "models/aqa"
 
 
+def create_gemini_content(instructions, prompt, encoded_image):
+    """
+    Creates the content structure for the Gemini API request.
+
+    Args:
+        instructions (str): The instructions for the model.
+        prompt (str): The prompt for the model.
+        encoded_image (str): The base64 encoded image string.
+
+    Returns:
+        list: A list of types.Content objects ready for the Gemini API.
+    """
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part(text=instructions),
+                types.Part(text=prompt),
+                types.Part(
+                    inline_data=types.Blob(
+                        mime_type="image/png", data=base64.b64decode(encoded_image)
+                    )
+                ),
+            ],
+        )
+    ]
+    return contents
+
+
+SAFETY_SETTINGS = [
+    types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"),
+    types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
+    types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"),
+    types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF"),
+]
+
+
+def create_generate_content_config(temperature=0.1, top_p=0.95, max_output_tokens=8192, response_modalities=["TEXT"]):
+    """
+    Creates and returns a GenerateContentConfig object with predefined settings.
+
+    Returns:
+        types.GenerateContentConfig: A configured GenerateContentConfig object.
+    """
+    generate_content_config = types.GenerateContentConfig(
+        temperature=temperature,
+        top_p=top_p,
+        max_output_tokens=max_output_tokens,
+        response_modalities=response_modalities,
+        safety_settings=SAFETY_SETTINGS,
+    )
+    return generate_content_config
+
+
 def load_image(image_path: Path) -> str | None:
     """Loads an image and returns it as a base64 encoded string."""
     try:
