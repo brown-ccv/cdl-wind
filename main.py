@@ -146,11 +146,8 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
             _result = process_response(response_text)
             if _result:
                 _result["id"] = image_file
+                # TODO: remove this with better prompt
                 del _result["Image ID"]
-                pp(_result)
-                df = pd.DataFrame(_result, index=[0])
-                print(df)
-                # breakpoint()
                 results.append(_result)
             else:
                 logger.error("Error loading image %s", image_file, exc_info=True)
@@ -160,8 +157,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
 
     # Format and print the results
     results_df = convert_dicts_to_dataframe(results)
-    pp(results_df)
-    # breakpoint()
+    results_df.to_csv("results-test.csv", index=False)
 
 
 def main():
