@@ -180,10 +180,6 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
 
             # Process the response
             response_text = response.text
-
-            # Here you would parse the response_text to extract the answers
-            # This part depends on how the model formats its response
-            # For now, we'll just store the raw response
             _result = process_response(response_text)
             if _result:
                 _result["id"] = image_file
