@@ -4,6 +4,7 @@ import base64
 import io
 from enum import StrEnum
 from pprint import pp
+import logging
 
 import pandas as pd
 from PIL import Image
@@ -12,6 +13,16 @@ from google import genai
 from google.genai import types
 
 from parser import process_response, convert_dicts_to_dataframe
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("app.log"),  # File output
+    ],
+)
+logger = logging.getLogger(__name__)
 
 
 class GeminiModel(StrEnum):
@@ -58,8 +69,8 @@ def load_image(image_path: Path) -> str | None:
             img.save(buffered, format=img.format)
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
             return img_str
-    except Exception as e:
-        print(f"Error loading image {image_path}: {e}")
+    except Exception as _:
+        logger.error(f"Error loading image {image_path}", exc_info=True)
         return None
 
 
@@ -68,8 +79,8 @@ def load_text_file(file_path: Path) -> str | None:
     try:
         with open(file_path, "r") as f:
             return f.read()
-    except Exception as e:
-        print(f"Error loading file {file_path}: {e}")
+    except Exception:
+        logger.error(f"Error loading file {file_path}", exc_info=True)
         return None
 
 
@@ -80,6 +91,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
 
     for image_file in tqdm(image_files, desc=""):
         image_path = Path(image_folder) / image_file
+        logger.info("Processing image %s", image_path)
         encoded_image = load_image(image_path)
         if encoded_image is None:
             continue
@@ -141,10 +153,10 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
                 # breakpoint()
                 results.append(_result)
             else:
-                print(f"Failed to parse response for image: {image_file}")
+                logger.error("Error loading image %s", image_file, exc_info=True)
 
         except Exception as e:
-            print(f"Error processing image {image_file}: {e}")
+            logger.error("Error processing image %s: %s", image_file, e)
 
     # Format and print the results
     results_df = convert_dicts_to_dataframe(results)
@@ -199,7 +211,7 @@ def main():
     if instructions and prompt:
         generate_analysis(client, model, args.image_folder, instructions, prompt)
     else:
-        print("Error: Could not load instructions or prompt.")
+        logger.error("Error: Could not load instructions or prompt.")
 
 
 if __name__ == "__main__":
