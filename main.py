@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import argparse
 import base64
 import io
@@ -50,7 +50,7 @@ class GeminiModel(StrEnum):
     AQA = "models/aqa"
 
 
-def load_image(image_path):
+def load_image(image_path: Path) -> str | None:
     """Loads an image and returns it as a base64 encoded string."""
     try:
         with Image.open(image_path) as img:
@@ -63,7 +63,7 @@ def load_image(image_path):
         return None
 
 
-def load_text_file(file_path):
+def load_text_file(file_path: Path) -> str | None:
     """Loads the content of a text file."""
     try:
         with open(file_path, "r") as f:
@@ -75,15 +75,11 @@ def load_text_file(file_path):
 
 def generate_analysis(client, model, image_folder, instructions, prompt):
     """Generates analysis for images in a folder based on instructions and prompt."""
-    image_files = [
-        f
-        for f in os.listdir(image_folder)
-        if os.path.isfile(os.path.join(image_folder, f))
-    ]
+    image_files = [f.name for f in image_folder.iterdir() if f.is_file()]
     results = []
 
-    for image_file in tqdm(image_files, desc="Processing images"):
-        image_path = os.path.join(image_folder, image_file)
+    for image_file in tqdm(image_files, desc=""):
+        image_path = Path(image_folder) / image_file
         encoded_image = load_image(image_path)
         if encoded_image is None:
             continue
@@ -164,15 +160,22 @@ def main():
     model_choices = [model.value for model in GeminiModel]
     parser = argparse.ArgumentParser(description="Analyze images using Gemini API.")
     parser.add_argument(
-        "--image-folder", default="assets", help="Path to the folder containing images."
+        "--image-folder",
+        default="assets",
+        help="Path to the folder containing images.",
+        type=Path,
     )
     parser.add_argument(
         "--instructions-file",
         default="instruction.txt",
         help="Path to the instructions text file.",
+        type=Path,
     )
     parser.add_argument(
-        "--prompt-file", default="prompt.txt", help="Path to the prompt text file."
+        "--prompt-file",
+        default="prompt.txt",
+        help="Path to the prompt text file.",
+        type=Path,
     )
     parser.add_argument(
         "--project", default="get-think-tank-urls", help="GCP project ID"
@@ -197,9 +200,7 @@ def main():
     prompt = load_text_file(args.prompt_file)
 
     if instructions and prompt:
-        generate_analysis(
-            client, model, args.image_folder, instructions, prompt
-        )
+        generate_analysis(client, model, args.image_folder, instructions, prompt)
     else:
         print("Error: Could not load instructions or prompt.")
 
