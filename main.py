@@ -136,7 +136,7 @@ def load_text_file(file_path: Path) -> str | None:
         return None
 
 
-def generate_analysis(client, model, image_folder, instructions, prompt):
+def generate_analysis(client, model, image_folder, instructions, prompt, output_file):
     """Generates analysis for images in a folder based on instructions and prompt."""
     image_files = [f.name for f in image_folder.iterdir() if f.is_file()]
     results = []
@@ -192,7 +192,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
 
     # Format and print the results
     results_df = convert_dicts_to_dataframe(results)
-    results_df.to_csv("results-test.csv", index=False)
+    results_df.to_csv(output_file, index=False)
 
 
 def main():
@@ -232,6 +232,8 @@ def main():
             f"{', '.join(model_choices)}"
         ),
     )
+    parser.add_argument("--output", help="Ouput file path", type=Path)
+
     args = parser.parse_args()
 
     client = genai.Client(vertexai=True, project=args.project, location=args.location)
@@ -240,7 +242,7 @@ def main():
     prompt = load_text_file(args.prompt_file)
 
     if instructions and prompt:
-        generate_analysis(client, model, args.image_folder, instructions, prompt)
+        generate_analysis(client, model, args.image_folder, instructions, prompt, args.output)
     else:
         logger.error("Error: Could not load instructions or prompt.")
 
