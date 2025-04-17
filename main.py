@@ -96,20 +96,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
         if encoded_image is None:
             continue
 
-        contents = [
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part(text=instructions),
-                    types.Part(text=prompt),
-                    types.Part(
-                        inline_data=types.Blob(
-                            mime_type="image/png", data=base64.b64decode(encoded_image)
-                        )
-                    ),
-                ],
-            )
-        ]
+        contents = create_gemini_content(instructions, prompt, encoded_image)
 
         generate_content_config = types.GenerateContentConfig(
             temperature=0.1,
