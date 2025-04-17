@@ -84,15 +84,12 @@ def generate_analysis(client, model, image_folder, instructions, prompt):
         if encoded_image is None:
             continue
 
-        # Use the entire prompt as prompt_text
-        prompt_text = prompt
-
         contents = [
             types.Content(
                 role="user",
                 parts=[
                     types.Part(text=instructions),
-                    types.Part(text=prompt_text),
+                    types.Part(text=prompt),
                     types.Part(
                         inline_data=types.Blob(
                             mime_type="image/png", data=base64.b64decode(encoded_image)
