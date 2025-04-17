@@ -6,6 +6,57 @@ You will be provided with a folder of images. For each image in the folder, anal
 
 Under NO circumstances should you include any introductory or explanatory text. Only provide the JSON-like string. If you cannot answer a question based on the image, respond with "Cannot determine from image".
 
+**CRITICAL INSTRUCTION: JSON String Formatting**
+
+When generating the JSON-like string, you **MUST** follow these rules precisely:
+
+1.  **Escape Double Quotes:** Any double quote characters (`"`) within the text values **MUST** be escaped using a single backslash (`\`). This means a double quote should be represented as `\"`.
+2.  **Escape Single Quotes:** Any single quote characters (`'`) within the text values **MUST** be escaped using a single backslash (`\`). This means a single quote should be represented as `\'`.
+3.  **No Unescaped Quotes:** **DO NOT** include any unescaped double quotes or single quotes within the text values.
+4.  **Handle Newlines as Spaces:** If there are newlines in the text, replace them with a single space. **DO NOT** use `\n` or any other escape sequence for newlines.
+5.  **No Extra Spaces:** Do not include any extra spaces before or after the values.
+6.  **Do Not Replace Single Quotes with Double Quotes:** If there is a single quote in the text, it should remain a single quote, and it should be escaped. **Specifically, words like "get'em" MUST be represented as "get\'em"**.
+
+**Examples of Correct Escaping and Formatting:**
+
+*   **Correct:** `"This is a \"quoted\" string."` (Double quotes escaped)
+*   **Correct:** `"It\'s a \'single quoted\' string."` (Single quotes escaped)
+*   **Correct:** `"The user said, \"Hello there!\" and then, \"Goodbye!\""` (Multiple double quotes escaped)
+*   **Correct:** `"This string has a newline: Like this."` (Newline replaced with a space)
+*   **Correct:** `"Go get\'em"` (Single quote escaped - **THIS IS CRUCIAL**)
+*   **Correct:** `"This is a string with \"quotes\" and a single quote \' in it."`
+*   **Correct:** `"Here's another example with a single quote: Don\'t do that."`
+*   **Incorrect:** `"This is a "quoted" string."` (Unescaped double quote)
+*   **Incorrect:** `"It's a 'single quoted' string."` (Unescaped single quote)
+*   **Incorrect:** `"This string has a newline:\\nLike this."` (Incorrect newline representation)
+*   **Incorrect:** `"Go get\"em"` (Single quote replaced with double quote - **THIS IS WRONG**)
+*   **Incorrect:** `" This is a string with extra spaces. "` (Extra spaces)
+*   **Incorrect:** `"This string has a newline:\nLike this."` (Newline not replaced with a space)
+
+**Example of Correct Output:**
+
+```json
+{
+    "Image ID": "image1.jpg",
+    "1": "Facebook Group Name",
+    "2": "MaryBeth Feeney Love this!!! Go get\'em...Every day. You always have my help...anything I can do. We will never stop..until every last one is finished.",
+    "3": "123",
+    "4": "Cannot determine from image",
+    "5": "Yes",
+    "6": "Description of the image",
+    "7": "Poster Name",
+    "8": "No",
+    "9": "2023-10-27",
+    "10": "Support",
+    "11": "Yes, Project X",
+    "12": "Other",
+    "13": "Scenic beauty",
+    "14": "No",
+    "15": "Climate solutions won’t work",
+    "16": "Cannot determine from image",
+    "17": "Climate policies are ineffective"
+}
+
 Questions:
 
 [
