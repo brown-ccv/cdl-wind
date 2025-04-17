@@ -1,0 +1,177 @@
+You will be provided with a folder of images. For each image in the folder, analyze the image and answer the following questions. Present the results as a JSON-like string that can be easily parsed as a Python dictionary. The dictionary MUST have the following structure:
+
+*   The key "Image ID" MUST contain the image file name.
+*   The remaining keys MUST be the question numbers (1, 2, 3, ...).
+*   The values MUST be the answers to the corresponding questions.
+
+Under NO circumstances should you include any introductory or explanatory text. Only provide the JSON-like string. If you cannot answer a question based on the image, respond with "Cannot determine from image".
+
+**CRITICAL INSTRUCTION: JSON String Formatting**
+
+When generating the JSON-like string, you **MUST** follow these rules precisely:
+
+1.  **Escape Double Quotes:** Any double quote characters (`"`) within the text values **MUST** be escaped using a single backslash (`\`). This means a double quote should be represented as `\"`.
+2.  **Escape Single Quotes:** Any single quote characters (`'`) within the text values **MUST** be escaped using a single backslash (`\`). This means a single quote should be represented as `\'`.
+3.  **No Unescaped Quotes:** **DO NOT** include any unescaped double quotes or single quotes within the text values.
+4.  **Handle Newlines as Spaces:** If there are newlines in the text, replace them with a single space. **DO NOT** use `\n` or any other escape sequence for newlines.
+5.  **No Extra Spaces:** Do not include any extra spaces before or after the values.
+6.  **Do Not Replace Single Quotes with Double Quotes:** If there is a single quote in the text, it should remain a single quote, and it should be escaped. **Specifically, words like "get'em" MUST be represented as "get\'em"**.
+
+**Examples of Correct Escaping and Formatting:**
+
+*   **Correct:** `"This is a \"quoted\" string."` (Double quotes escaped)
+*   **Correct:** `"It\'s a \'single quoted\' string."` (Single quotes escaped)
+*   **Correct:** `"The user said, \"Hello there!\" and then, \"Goodbye!\""` (Multiple double quotes escaped)
+*   **Correct:** `"This string has a newline: Like this."` (Newline replaced with a space)
+*   **Correct:** `"Go get\'em"` (Single quote escaped - **THIS IS CRUCIAL**)
+*   **Correct:** `"This is a string with \"quotes\" and a single quote \' in it."`
+*   **Correct:** `"Here's another example with a single quote: Don\'t do that."`
+*   **Incorrect:** `"This is a "quoted" string."` (Unescaped double quote)
+*   **Incorrect:** `"It's a 'single quoted' string."` (Unescaped single quote)
+*   **Incorrect:** `"This string has a newline:\\nLike this."` (Incorrect newline representation)
+*   **Incorrect:** `"Go get\"em"` (Single quote replaced with double quote - **THIS IS WRONG**)
+*   **Incorrect:** `" This is a string with extra spaces. "` (Extra spaces)
+*   **Incorrect:** `"This string has a newline:\nLike this."` (Newline not replaced with a space)
+
+**Example of Correct Output:**
+
+```json
+{
+    "Image ID": "image1.jpg",
+    "1": "Facebook Group Name",
+    "2": "MaryBeth Feeney Love this!!! Go get\'em...Every day. You always have my help...anything I can do. We will never stop..until every last one is finished.",
+    "3": "123",
+    "4": "Cannot determine from image",
+    "5": "Yes",
+    "6": "Description of the image",
+    "7": "Poster Name",
+    "8": "No",
+    "9": "2023-10-27",
+    "10": "Support",
+    "11": "Yes, Project X",
+    "12": "Other",
+    "13": "Scenic beauty",
+    "14": "No",
+    "15": "Climate solutions won’t work",
+    "16": "Cannot determine from image",
+    "17": "Climate policies are ineffective"
+}
+
+Questions:
+
+1. Who posted this? Write the First and Last name.
+
+2. Extract and return only the original caption text written by the person who made the post.
+    Include hashtags in the extracted text.
+    Do not extract or describe any text that appears within an image attached to the post.
+    Do not extract or include text from linked articles, even if shown in a preview.
+    Do not extract or describe any comments, reactions, or shares.
+    If the post only contains an image or a link without any original caption, return nothing.
+
+3. Does it have imagery (not just text)? If so, what kind of imagery is it?
+
+4. If there is text in the image, extract and return that text here.
+
+5. If the post is a repost:
+    If the post links to an external article or website (such as a news article, blog post, etc.):
+    Extract and return the title of the article (as shown in the post preview).
+    Include the source (e.g. "The Guardian", "NYTimes.com") if visible.
+    If the post is resharing or embedding another user’s post (from Facebook, Twitter, Instagram, etc.):
+    Do not treat it as an article.
+    Extract and return the username of the original post.
+    If there is a Facebook group name next to the username of the original post, extract and return the Facebook group name.
+    If there is no external link and no reshared content, do not return anything in this section.
+
+6. When was the post published? Extract and return the date and military time according to this format: MM/DD/YYYY, XX:XX.
+
+7. How many reactions does the post have? If there are no reactions visible, write 0.
+8. How many comments does the post have? If there are no comments visible, write 0.
+
+9. Include some of the top comments if applicable, according to this format: Username: “Comment”. If the comment includes an image, describe what the image is. If there are no comments visible, leave this blank.
+
+10. How many shares does the post have? If there are no shares visible, return 0.
+
+11. Is the post Trump related (does it mention or depict Trump)? State Yes or No.
+
+12. Is the post explicitly offshore wind related (contains pictures of offshore wind, mentions of offshore wind)? State Yes or No.
+
+13. If the post does not relate to offshore wind explicitly, what does it relate to? Return one or more.
+    Batteries (or any mention of BESS or storage facilities)
+    General political updates (such as
+    Community updates (such as advertisements for community events, updates about community members and/or more)
+    Knowledge sharing (tips or tricks and/or other news updates that are not explicitly political)
+    Talking about other forms of wind energy (such as onshore wind) and/or other forms of renewable energy Skip to question 17
+    Call to Action (such as to call/email a certain politician
+    Information about specific wind energy projects that are not explicitly opinionated (such as the location of ).
+    If none of the described options are accurate, please write a short description of what it relates to.
+
+14. Does the post generally support or oppose renewable energy? Mark only one
+    Oppose
+    Neutral Skip to question 19
+    Support
+
+15. Does the post refer to a specific renewable energy project? If so, extract and list the renewable energy project name. If not, leave this blank.
+
+16. What are the key issues raised by the post? Return all that apply.
+    Scenic beauty: impacts on views/beauty/aesthetic quality of the land or seascape.
+    Property value: impacts on property value in a negative or positive way.
+    Noise: discusses noise of construction or operation of project.
+    Dangerous: discusses generalized dangers of renewable energy (such as broken turbine blades, lightning strikes, broken towers and/or more).
+    Future or character of community: discusses concerns about the character or future of community, livelihoods, etc.
+    Threat to wildlife: discusses a threat to animals, plants, or ecosystems.
+    Whales: specifically discusses the impacts of renewable energy to whales.
+    Economy: discusses economic impacts of project (such as job creation/loss, taxes, other revenue).
+    Health impacts: discusses health impacts, including mental health, e.g. from flicker, EMFs, etc.
+    Roads/infrastructure: discusses impacts to roads, shipping lanes, or other public infrastructure
+    Sustainability and Climate Issues: Discusses energy independence and or impacts on climate.
+    Technological Skepticism/Optimism: Discussions of the reliability and/or technological feasibility of wind turbines.
+    Legality and Property Rights: Discuss the legality of the wind turbines. This includes any quotes about zoning, community codes, or property rights.
+    Tribes: Explicitly mentions the impact of renewable energy projects on tribes or indigenous communities.
+    Other: please describe briefly the key issue raised by the post.
+
+17. What's the single core issue raised by the post? Return only one.
+    Scenic beauty: impacts on views/beauty/aesthetic quality of the land or seascape.
+    Property value: impacts on property value in a negative or positive way.
+    Noise: discusses noise of construction or operation of project.
+    Dangerous: discusses generalized dangers of renewable energy (such as broken turbine blades, lightning strikes, broken towers and/or more).
+    Future or character of community: discusses concerns about the character or future of community, livelihoods, etc.
+    Threat to wildlife: discusses a threat to animals, plants, or ecosystems.
+    Whales: specifically discusses the impacts of renewable energy to whales.
+    Economy: discusses economic impacts of renewable energy projects (such as job creation/loss, taxes, other revenue and/or more).
+    Health impacts: discusses health impacts, including mental health, e.g. from flicker, EMFs, etc.
+    Roads/infrastructure: discusses impacts to roads, shipping lanes, or other public infrastructure
+    Sustainability and Climate Issues: Discusses energy independence and or impacts on climate.
+    Technological Skepticism/Optimism: Discussions of the reliability and/or technological feasibility of wind turbines.
+    Legality and Property Rights: Discuss the legality of the wind turbines. This includes any quotes about zoning, community codes, or property rights.
+    Tribes: Explicitly mentions the impact of renewable energy projects on tribes or indigenous communities.
+    Other: please describe briefly the key issue raised by the post.
+
+18. Overall, does the post make a principally economic argument for or against renewable energy? State Yes or No. After answering, skip to question 20.
+
+19. If the post does not directly support or oppose OSW explicitly, what does it do? Check all that apply.
+News related update (no explicit mention of politics/politicians/political institutions)
+Political updates
+Community updates/event announcements
+conspiracy theories
+Other: please give a short description
+
+20. What is the main claim being made in the post? Mark only one
+    1 Global warming is not happening
+    2 Human greenhouse gases are not causing global warming
+    3 Climate impacts are not bad
+    4 Climate solutions won't work/aren't needed
+    5 Climate movement/science is unreliable
+    None
+    Other
+
+21.If the claim falls in super claim 4, do they say that
+(Mark only one)
+Climate change policies are harmful
+Climate policies are ineffective
+Mitigation policies are unnecessary/secondary
+Climate policy is too difficult
+Climate friendly alternatives won't work
+We need fossil fuels
+No need for more action
+not applicable
+Other
