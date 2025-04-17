@@ -3,10 +3,8 @@ import argparse
 import base64
 import io
 from enum import StrEnum
-from pprint import pp
 import logging
 
-import pandas as pd
 from PIL import Image
 from tqdm import tqdm
 from google import genai
