@@ -187,8 +187,16 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
             if result:
                 results.append(result)
 
-    # Format and print the results
     results_df = convert_dicts_to_dataframe(results)
+
+    # Move id column to leftmost position
+    if "id" in results_df.columns:
+        id_col = results_df.pop("id")
+        results_df.insert(0, "id", id_col)
+
+    # keep unique rows
+    results_df = results_df.drop_duplicates(subset=["id"])
+    
     results_df.to_csv(output_file, index=False)
 
 
