@@ -1,4 +1,4 @@
-You will be provided with a folder of images. For each image in the folder, analyze the image and answer the following questions. Present the results as a JSON-like string that can be easily parsed as a Python dictionary. The dictionary MUST have the following structure:
+You will be provided with an image. Analyze the image and answer the following questions. Present the results as a JSON-like string that can be easily parsed as a Python dictionary. The dictionary MUST have the following structure:
 
 *   The key "Image ID" MUST contain the image file name.
 *   The remaining keys MUST be the question numbers (1, 2, 3, ...).
@@ -81,9 +81,10 @@ Questions:
     If there is a Facebook group name next to the username of the original post, extract and return the Facebook group name.
     If there is no external link and no reshared content, do not return anything in this section.
 
-6. When was the post published? Extract and return the date and military time according to this format: MM/DD/YYYY, XX:XX.
+6. When was the post published? When available extract and return the date and military time according to this format: MM/DD/YYYY, hh:mm. If the year, date, or time is not visible in the image, respond with "Cannot determine from image".
 
 7. How many reactions does the post have? If there are no reactions visible, write 0.
+
 8. How many comments does the post have? If there are no comments visible, write 0.
 
 9. Include some of the top comments if applicable, according to this format: Username: “Comment”. If the comment includes an image, describe what the image is. If there are no comments visible, leave this blank.
