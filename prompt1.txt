@@ -37,7 +37,6 @@ When generating the JSON-like string, you **MUST** follow these rules precisely:
 
 ```json
 {
-    "Image ID": "image1.jpg",
     "1": "Facebook Group Name",
     "2": "MaryBeth Feeney Love this!!! Go get\'em...Every day. You always have my help...anything I can do. We will never stop..until every last one is finished.",
     "3": "123",
@@ -149,11 +148,11 @@ Questions:
 18. Overall, does the post make a principally economic argument for or against renewable energy? State Yes or No. After answering, skip to question 20.
 
 19. If the post does not directly support or oppose OSW explicitly, what does it do? Check all that apply.
-News related update (no explicit mention of politics/politicians/political institutions)
-Political updates
-Community updates/event announcements
-conspiracy theories
-Other: please give a short description
+    News related update (no explicit mention of politics/politicians/political institutions)
+    Political updates
+    Community updates/event announcements
+    conspiracy theories
+    Other: please give a short description
 
 20. What is the main claim being made in the post? Mark only one
     1 Global warming is not happening
@@ -165,13 +164,13 @@ Other: please give a short description
     Other
 
 21.If the claim falls in super claim 4, do they say that
-(Mark only one)
-Climate change policies are harmful
-Climate policies are ineffective
-Mitigation policies are unnecessary/secondary
-Climate policy is too difficult
-Climate friendly alternatives won't work
-We need fossil fuels
-No need for more action
-not applicable
-Other
+    (Mark only one)
+    Climate change policies are harmful
+    Climate policies are ineffective
+    Mitigation policies are unnecessary/secondary
+    Climate policy is too difficult
+    Climate friendly alternatives won't work
+    We need fossil fuels
+    No need for more action
+    not applicable
+    Other
