@@ -173,7 +173,7 @@ def analyze_image(client, model, image_path, instructions, prompt):
 
 def generate_analysis(client, model, image_folder, instructions, prompt, output_file):
     """Generates analysis for images in a folder using threading."""
-    image_files = [f for f in image_folder.iterdir() if f.is_file()]
+    image_files = [f for f in image_folder.rglob("*") if f.is_file()]
     results = []
 
     with ThreadPoolExecutor(max_workers=4) as executor:  # Adjust max_workers as needed
