@@ -138,7 +138,7 @@ def load_text_file(file_path: Path) -> str | None:
 
 def generate_analysis(client, model, image_folder, instructions, prompt, output_file):
     """Generates analysis for images in a folder based on instructions and prompt."""
-    image_files = [f.name for f in image_folder.iterdir() if f.is_file()]
+    image_files = [f for f in image_folder.rglob("*") if f.is_file()]
     results = []
 
     for image_file in tqdm(image_files, desc=""):
