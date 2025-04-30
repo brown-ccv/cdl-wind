@@ -9,7 +9,7 @@ from functools import reduce
 logger = logging.getLogger(__name__)
 
 
-def parse_json_like_output(output_text):
+def parse_json_like_output(output_text, image_name=None):
     """
     Parses a JSON-like string into a Python dictionary.
 
@@ -44,14 +44,19 @@ def parse_json_like_output(output_text):
         return data
 
     except json.JSONDecodeError:
-        logger.error("Error: Invalid JSON format", exc_info=True)
+        img_name = f"for image {image_name}." if image_name else "."
+        problematic_content = f"\nProblematic content:\n{output_text}"
+        log_message = f"Error: Invalid JSON format {img_name}{problematic_content}"
+        logger.error(log_message, exc_info=True)
         return None
     except Exception:
-        logger.error("An unexpected error occurred", exc_info=True)
+        base_message = "An unexpected error occurred while processing text"
+        log_message = f"{base_message} from {image_name}." if image_name else "."
+        logger.error(log_message, exc_info=True)
         return None
 
 
-def process_response(response_text):
+def process_response(response_text, image_name=None):
     """
     Processes the raw response text from the AI, parses it into a dictionary,
     and returns a structured dictionary.
@@ -62,7 +67,7 @@ def process_response(response_text):
     Returns:
         A dictionary containing the parsed data, or None if parsing fails.
     """
-    parsed_data = parse_json_like_output(response_text)
+    parsed_data = parse_json_like_output(response_text, image_name)
     if parsed_data:
         return parsed_data
     else:

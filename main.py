@@ -142,9 +142,8 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
     results = []
 
     for image_file in tqdm(image_files, desc=""):
-        image_path = Path(image_folder) / image_file
-        logger.info("Processing image %s", image_path)
-        encoded_image = load_image(image_path)
+        logger.info("Processing image %s", image_file)
+        encoded_image = load_image(image_file)
         if encoded_image is None:
             continue
 
@@ -178,7 +177,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
 
             # Process the response
             response_text = response.text
-            _result = process_response(response_text)
+            _result = process_response(response_text, image_file)
             if _result:
                 _result["id"] = image_file
                 # TODO: remove this with better prompt

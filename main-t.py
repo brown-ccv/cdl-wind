@@ -155,7 +155,7 @@ def analyze_image(client, model, image_path, instructions, prompt):
 
         # Process the response
         response_text = response.text
-        _result = process_response(response_text)
+        _result = process_response(response_text, image_path.name)
         if _result:
             _result["id"] = image_path.name
             # TODO: remove this with better prompt
