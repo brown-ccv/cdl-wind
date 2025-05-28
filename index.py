@@ -147,7 +147,7 @@ class Index(OrderedDict):
     def __str__(self):
         return pformat(self)
 
-    def group_by_prefix(self):
+    def by_group(self):
         result = defaultdict(dict)
         for key, value in self.items():
             prefix, number = value.split('-')
