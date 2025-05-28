@@ -1,12 +1,32 @@
-import json
 import argparse
+import json
+import logging
+from collections import OrderedDict, defaultdict
 from pathlib import Path
+from pprint import pformat
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+image_file_extensions = (
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+)
 
 group_mapping = {
     "New England Offshore Wind Discussion": "NEOW",
     "Protect Our Coast - NJ Community Group": "PCNJ",
+    "Protect Our Coast NJ Community Group": "PCNJ",
     "Protect Our Oceans MA": "PCMA",
     "Protect Our Coast - LINY": "PCLI",
+    "Protect Our Coast LINY": "PCLI",
     "Saltwater Scam": "SLSC",
     "Fishermen Steward": "FIST",
     "Save LBI": "SLBI",
@@ -16,99 +36,134 @@ group_mapping = {
 }
 
 
-def infer_group_code_from_path(file_path: str, group_mapping: dict = group_mapping) -> str | None:
-    """Infers the Facebook group code from the file path based on directory names.
-
-    Args:
-        file_path (str): The path to the file.
-        group_mapping (dict): A dictionary mapping group names to their codes.
-
-    Returns:
-        str: The inferred group code, or None if no match is found.
-    """
+def infer_group_code_from_path(
+    file_path: str | Path, group_mapping: dict = group_mapping
+) -> str:
     path = Path(file_path)
-    for directory in path.parts:
-        for group_name, group_code in group_mapping.items():
-            if group_code.lower() in directory.lower() or group_name.lower() in directory.lower():
-                return group_code
-    return None
+    parent_dir = path.parent.name  # Extract the name of the parent directory
+    return group_mapping.get(parent_dir, "MISC")
 
 
-def assign_post_id(filename, id_file="post_ids.json", directory="screenshots", group_mapping: dict = group_mapping):
-    """Assigns a unique post ID to a file based on its group (inferred from the path) and updates the ID record.
+def get_next_post_id(group_code, index):
+    """Computes the next available post ID for a group based on the existing index."""
+    max_id = 0
+    for filename, post_id in index.items():
+        if post_id.startswith(group_code):
+            try:
+                current_id = int(post_id.split("-")[1])
+                max_id = max(max_id, current_id)
+            except ValueError:
+                logger.warning(f"Invalid post ID format: {post_id}")
+    return max_id + 1
 
-    Args:
-        filename (str): The name of the file to assign an ID to, including (part of) the path.
-        id_file (str, optional): The name of the file to store ID data. Defaults to "post_ids.json".
-        directory (str, optional): The base directory containing the files. Defaults to "screenshots".
-        group_mapping (dict): A dictionary mapping group names to their codes.
 
-    Returns:
-        tuple: The original filename and the assigned post ID, or (None, None) if an error occurred or the group couldn't be inferred.
-    """
+def assign_post_id(
+    filename,
+    index,  # Pass the index as an argument
+    group_mapping: dict = group_mapping,
+):
     try:
-        # Infer group code from the file path
         group_code = infer_group_code_from_path(filename, group_mapping)
         if not group_code:
-            print(f"Could not infer group code from path: {filename}")
+            logger.warning(f"Could not infer group code from path: {filename}")
             return None, None
 
-        # Load existing ID data
-        id_file_path = Path(id_file)
-        if id_file_path.exists():
-            with open(id_file_path, "r") as f:
-                id_data = json.load(f)
-        else:
-            id_data = {}
-
-        # Get the last assigned ID for the group, or initialize if new
-        last_id = id_data.get(group_code, 0)
-        next_id = last_id + 1
-
-        # Format the new ID
+        next_id = get_next_post_id(group_code, index)
         post_id = f"{group_code}-{next_id:04d}"
-
-        # Update the ID data and save
-        id_data[group_code] = next_id
-        with open(id_file_path, "w") as f:
-            json.dump(id_data, f)
 
         return filename, post_id
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         return None, None
 
 
-def process_directory(directory="screenshots", index_file="file_index.json"):
-    """Processes all files within the specified directory and its subdirectories, creating an index.
-
-    Args:
-        directory (str): The directory to process.
-        index_file (str): The name of the file to store the index.
-    """
+def process_directory(
+    directory: str | Path = "assets", index_file: str | Path = "file_index.json"
+):
     directory_path = Path(directory)
-    index = {}
-    for file_path in directory_path.rglob("*"):
-        if file_path.is_file():
-            relative_path = str(file_path.relative_to(directory_path))
-            original_filename = relative_path  # Store the original relative path
-            filename, post_id = assign_post_id(original_filename)
-            if filename and post_id:
-                index[original_filename] = post_id
+    index_file_path = Path(index_file)
 
-    # Save the index to a JSON file
+    if index_file_path.exists():
+        with open(index_file_path, "r") as f:
+            index = OrderedDict(json.load(f))  # Load as OrderedDict
+    else:
+        index = OrderedDict()
+
+
+    for file_path in sorted(directory_path.rglob("*")):
+        process_file_condition = all(
+            [file_path.is_file(), file_path.suffix.lower() in image_file_extensions]
+        )
+        if process_file_condition:
+            logger.info("Processing file: %s", file_path)
+            original_filename = str(file_path.relative_to(directory_path))
+            if original_filename == "ACK 4 Whales/bar copy.png":
+                breakpoint()
+            if original_filename not in index:  # Only process new files
+                filename, post_id = assign_post_id(
+                    original_filename, index
+                )  # Pass index
+                if filename and post_id:
+                    index[original_filename] = post_id
+
     with open(index_file, "w") as f:
         json.dump(index, f, indent=4)
-    print(f"Index saved to {index_file}")
+    logger.info(f"Index saved to {index_file}")
+
+class Index(OrderedDict):
+    def __init__(self, directory, index_file):
+        # Load or create the index
+        index = self.process_directory(directory=directory, index_file=index_file)
+        super().__init__(index)
+
+    @staticmethod
+    def process_directory(directory: str | Path = "assets", index_file: str | Path = "file_index.json"):
+        directory_path = Path(directory)
+        index_file_path = Path(index_file)
+
+        if index_file_path.exists():
+            with open(index_file_path, "r") as f:
+                index = OrderedDict(json.load(f))
+        else:
+            index = OrderedDict()
+
+        for file_path in sorted(directory_path.rglob("*")):
+            process_file_condition = all([
+                file_path.is_file(),
+                file_path.suffix.lower() in image_file_extensions
+            ])
+            if process_file_condition:
+                original_filename = str(file_path.relative_to(directory_path))
+                if original_filename not in index:
+                    filename, post_id = assign_post_id(original_filename, index)
+                    if filename and post_id:
+                        index[original_filename] = post_id
+
+        with open(index_file_path, "w") as f:
+            json.dump(index, f, indent=4)
+        return index
+
+    def __str__(self):
+        return pformat(self)
+
+    def group_by_prefix(self):
+        result = defaultdict(dict)
+        for key, value in self.items():
+            prefix, number = value.split('-')
+            result[prefix][number] = key
+        return result
+
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create an index of files with unique post IDs.")
+    parser = argparse.ArgumentParser(
+        description="Create an index of files with unique post IDs."
+    )
     parser.add_argument(
         "--directory",
-        default="screenshots",
-        help="The directory to process. Defaults to 'screenshots'.",
+        default="assets",
+        help="The directory to process. Defaults to 'assets'.",
     )
     parser.add_argument(
         "--index-file",
@@ -118,7 +173,7 @@ def main():
     args = parser.parse_args()
 
     process_directory(args.directory, args.index_file)
-    print("Finished processing files.")
+    logger.info("Finished processing files.")
 
 
 if __name__ == "__main__":
