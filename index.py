@@ -82,9 +82,7 @@ def is_image_file(file_path):
     return all([file_path.is_file(), file_path.suffix.lower() in image_file_extensions])
 
 
-def process_directory(
-    directory: str | Path = "assets", index_file: str | Path = "file_index.json"
-):
+def process_directory(directory: str | Path, index_file: str | Path):
     directory_path = Path(directory)
     index_file_path = Path(index_file)
 
@@ -95,10 +93,7 @@ def process_directory(
         index = OrderedDict()
 
     for file_path in sorted(directory_path.rglob("*")):
-        process_file_condition = all(
-            [file_path.is_file(), file_path.suffix.lower() in image_file_extensions]
-        )
-        if process_file_condition:
+        if is_image_file(file_path):
             logger.info("Processing file: %s", file_path)
             original_filename = str(file_path.relative_to(directory_path))
             if original_filename not in index:  # Only process new files
