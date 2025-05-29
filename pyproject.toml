@@ -7,9 +7,14 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "google-genai>=1.10.0",
-    "ipython>=9.1.0",
     "pandas>=2.2.3",
     "pillow>=11.2.1",
-    "ruff>=0.11.5",
     "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.2.0",
+    "pytest>=8.3.5",
+    "ruff>=0.11.11",
 ]
