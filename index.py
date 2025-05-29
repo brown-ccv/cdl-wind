@@ -135,6 +135,7 @@ class Index(OrderedDict):
                 [file_path.is_file(), file_path.suffix.lower() in image_file_extensions]
             )
             if process_file_condition:
+                logger.debug("Processing file: %s", file_path)
                 original_filename = str(file_path.relative_to(directory_path))
                 if original_filename not in index:
                     filename, post_id = assign_post_id(original_filename, index)
