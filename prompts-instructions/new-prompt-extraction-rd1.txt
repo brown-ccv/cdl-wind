@@ -1,0 +1,90 @@
+You will be provided with an image. Analyze the image and answer the following questions. Present the results as a JSON-like string that can be easily parsed as a Python dictionary. The dictionary MUST have the following structure:
+
+*   The key "Image ID" MUST contain the image file name.
+*   The remaining keys MUST be the question numbers (1, 2, 3, ...).
+*   The values MUST be the answers to the corresponding questions.
+
+Under NO circumstances should you include any introductory or explanatory text. Only provide the JSON-like string. If you cannot answer a question based on the image, respond with "Cannot determine from image".
+
+**CRITICAL INSTRUCTION: JSON String Formatting**
+
+When generating the JSON-like string, you **MUST** follow these rules precisely:
+
+1.  **Escape Double Quotes:** Any double quote characters (`"`) within the text values **MUST** be escaped using a single backslash (`\`). This means a double quote should be represented as `\"`.
+2.  **Escape Single Quotes:** Any single quote characters (`'`) within the text values **MUST** be escaped using a single backslash (`\`). This means a single quote should be represented as `\'`.
+3.  **No Unescaped Quotes:** **DO NOT** include any unescaped double quotes or single quotes within the text values.
+4.  **Handle Newlines as Spaces:** If there are newlines in the text, replace them with a single space. **DO NOT** use `\n` or any other escape sequence for newlines.
+5.  **No Extra Spaces:** Do not include any extra spaces before or after the values.
+6.  **Do Not Replace Single Quotes with Double Quotes:** If there is a single quote in the text, it should remain a single quote, and it should be escaped. **Specifically, words like "get'em" MUST be represented as "get\'em"**.
+
+**Examples of Correct Escaping and Formatting:**
+
+*   **Correct:** `"This is a \"quoted\" string."` (Double quotes escaped)
+*   **Correct:** `"It\'s a \'single quoted\' string."` (Single quotes escaped)
+*   **Correct:** `"The user said, \"Hello there!\" and then, \"Goodbye!\""` (Multiple double quotes escaped)
+*   **Correct:** `"This string has a newline: Like this."` (Newline replaced with a space)
+*   **Correct:** `"Go get\'em"` (Single quote escaped - **THIS IS CRUCIAL**)
+*   **Correct:** `"This is a string with \"quotes\" and a single quote \' in it."`
+*   **Correct:** `"Here's another example with a single quote: Don\'t do that."`
+*   **Incorrect:** `"This is a "quoted" string."` (Unescaped double quote)
+*   **Incorrect:** `"It's a 'single quoted' string."` (Unescaped single quote)
+*   **Incorrect:** `"This string has a newline:\\nLike this."` (Incorrect newline representation)
+*   **Incorrect:** `"Go get\"em"` (Single quote replaced with double quote - **THIS IS WRONG**)
+*   **Incorrect:** `" This is a string with extra spaces. "` (Extra spaces)
+*   **Incorrect:** `"This string has a newline:\nLike this."` (Newline not replaced with a space)
+
+FIGURE OUT:
+**Example of Correct Output:**
+
+```json
+{
+    "1": "Facebook Group Name",
+    "2": "MaryBeth Feeney Love this!!! Go get\'em...Every day. You always have my help...anything I can do. We will never stop..until every last one is finished.",
+    "3": "123",
+    "4": "Cannot determine from image",
+    "5": "Yes",
+    "6": "Description of the image",
+    "7": "Poster Name",
+    "8": "No",
+    "9": "2023-10-27",
+    "10": "Support",
+    "11": "Yes, Project X",
+    "12": "Other",
+    "13": "Scenic beauty",
+    "14": "No",
+    "15": "Climate solutions won’t work",
+    "16": "Cannot determine from image",
+    "17": "Climate policies are ineffective"
+}
+
+Who posted this? Write the First and Last name.
+Extract and return only the original caption text written by the person who made the post.
+Include hashtags in the extracted text. 
+Do not extract or describe any text that appears within an image attached to the post.
+Do not extract or include text from linked articles, even if shown in a preview.
+Do not extract or describe any comments, reactions, or shares.
+If the post only contains an image or a link without any original caption, return nothing.
+Text written by the person who made the post is always above an image if an image is included.
+
+Does it have imagery (not just text)? If so, what kind of imagery is it?
+Is the imagery made by AI?
+What is the tone of the image? Does it have a positive or negative atmosphere? Give a description of the atmosphere? (for example: foreboding, peaceful, menacing, cooperative, antagonistic, happy, confrontational, victorious) 
+Give a detailed description of the elements in the image and their position. Are the elements interacting? 
+For example: A windmill set against a stormy dark sky and churning waves. A strike of lightning is in the left half of the sky. Donald Trump’s mouth is superimposed on the clouds. The background has dark gray and orange coloring.
+If there is text in the image, extract and return that text here. Describe the characteristics of the text: What font is the text and what size is it? What color is it in? Is the text opacity high or does it blend in with the background? Where is the text placed in the image? 
+Is the post a repost? 
+If the post is resharing or embedding another user’s post (from Facebook, Twitter, Instagram, etc.):
+Do not treat it as an article.
+Extract and return the username of the original post.
+If there is a Facebook group name next to the username of the original post, extract and return the Facebook group name.
+If there is no external link and no reshared content, do not return anything in this section.
+ADD TEXT OF ORIGINAL USER
+If the post links to an external article or website (such as a news article, blog post, etc.):
+Extract and return the title of the article (as shown in the post preview). Include the source (e.g. "The Guardian", "NYTimes.com") if visible.
+When was the post published? When available extract and return the date and military time according to this format: MM/DD/YYYY, hh:mm. If the year, date, or time is not visible in the image, respond with "Cannot determine from image".
+How many reactions does the post have? If there are no reactions visible, write 0.
+How many comments does the post have? If there are no comments visible, write 0.
+Extract all comments in the screenshot: Username: “Comment”. If the comment includes an image, describe what the image is. If there are no comments visible, leave this blank.
+How many shares does the post have? If there are no shares visible, return 0.
+Is the post Trump related (does it mention or depict Trump)? State Yes or No.
+Is the post explicitly offshore wind related (contains pictures of offshore wind, mentions of offshore wind)? State Yes or No.
