@@ -32,3 +32,5 @@ subassets/
 .gitconfig
 app.log
 results-test.csv
+file_index.json
+assets*
