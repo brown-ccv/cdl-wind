@@ -58,24 +58,28 @@ def get_next_post_id(group_code, index):
 
 
 def assign_post_id(
-    filename,
-    index,  # Pass the index as an argument
+    filename: str | Path,
+    index: OrderedDict,
     group_mapping: dict = group_mapping,
 ):
     try:
         group_code = infer_group_code_from_path(filename, group_mapping)
         if not group_code:
             logger.warning(f"Could not infer group code from path: {filename}")
-            return None, None
+            return None
 
         next_id = get_next_post_id(group_code, index)
         post_id = f"{group_code}-{next_id:04d}"
 
-        return filename, post_id
+        return post_id
 
     except Exception as e:
         logger.error(f"Error: {e}")
-        return None, None
+        return None
+
+
+def is_image_file(file_path):
+    return all([file_path.is_file(), file_path.suffix.lower() in image_file_extensions])
 
 
 def process_directory(
@@ -97,13 +101,9 @@ def process_directory(
         if process_file_condition:
             logger.info("Processing file: %s", file_path)
             original_filename = str(file_path.relative_to(directory_path))
-            if original_filename == "ACK 4 Whales/bar copy.png":
-                breakpoint()
             if original_filename not in index:  # Only process new files
-                filename, post_id = assign_post_id(
-                    original_filename, index
-                )  # Pass index
-                if filename and post_id:
+                post_id = assign_post_id(original_filename, index)
+                if post_id:
                     index[original_filename] = post_id
 
     with open(index_file, "w") as f:
