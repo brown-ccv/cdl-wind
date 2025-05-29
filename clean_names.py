@@ -2,9 +2,15 @@
 
 import argparse
 import logging
+import re
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+
+def replace_space_like(text, replacement="_"):
+    """Replaces all Unicode whitespace characters with a replacement character."""
+    return re.sub(r"\s", replacement, text)
 
 
 def rename_spaces(directory):
@@ -16,14 +22,13 @@ def rename_spaces(directory):
         return
 
     for path in directory_path.rglob("*"):
-        if " " in path.name:
-            new_name = path.name.replace(" ", "_")
-            new_path = path.with_name(new_name)
-            try:
-                path.rename(new_path)
-                logging.info(f"Renamed '{path}' to '{new_path}'")
-            except OSError as e:
-                logging.error(f"Error renaming '{path}': {e}")
+        new_name = replace_space_like(path.name)
+        new_path = path.with_name(new_name)
+        try:
+            path.rename(new_path)
+            logging.debug("Renamed %s to '%s'", path, new_path)
+        except OSError as e:
+            logging.error("Error renaming '%s': %s", path, e)
 
 
 def main():
@@ -32,8 +37,6 @@ def main():
     )
     parser.add_argument(
         "directory",
-        nargs="?",
-        default=".",
         help="Directory to process (default: current directory)",
     )
     args = parser.parse_args()
