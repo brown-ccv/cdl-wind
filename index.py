@@ -163,11 +163,13 @@ def main():
     )
     parser.add_argument(
         "--directory",
+        "-d",
         default="assets",
         help="The directory to process. Defaults to 'assets'.",
     )
     parser.add_argument(
         "--index-file",
+        "-i",
         default="file_index.json",
         help="The name of the file to store the index. Defaults to 'file_index.json'.",
     )
