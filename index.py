@@ -90,7 +90,6 @@ def process_directory(
     else:
         index = OrderedDict()
 
-
     for file_path in sorted(directory_path.rglob("*")):
         process_file_condition = all(
             [file_path.is_file(), file_path.suffix.lower() in image_file_extensions]
@@ -111,6 +110,7 @@ def process_directory(
         json.dump(index, f, indent=4)
     logger.info(f"Index saved to {index_file}")
 
+
 class Index(OrderedDict):
     def __init__(self, directory, index_file):
         # Load or create the index
@@ -118,7 +118,9 @@ class Index(OrderedDict):
         super().__init__(index)
 
     @staticmethod
-    def process_directory(directory: str | Path = "assets", index_file: str | Path = "file_index.json"):
+    def process_directory(
+        directory: str | Path = "assets", index_file: str | Path = "file_index.json"
+    ):
         directory_path = Path(directory)
         index_file_path = Path(index_file)
 
@@ -129,10 +131,9 @@ class Index(OrderedDict):
             index = OrderedDict()
 
         for file_path in sorted(directory_path.rglob("*")):
-            process_file_condition = all([
-                file_path.is_file(),
-                file_path.suffix.lower() in image_file_extensions
-            ])
+            process_file_condition = all(
+                [file_path.is_file(), file_path.suffix.lower() in image_file_extensions]
+            )
             if process_file_condition:
                 original_filename = str(file_path.relative_to(directory_path))
                 if original_filename not in index:
@@ -147,13 +148,13 @@ class Index(OrderedDict):
     def __str__(self):
         return pformat(self)
 
+    @property
     def by_group(self):
         result = defaultdict(dict)
         for key, value in self.items():
-            prefix, number = value.split('-')
+            prefix, number = value.split("-")
             result[prefix][number] = key
         return result
-
 
 
 def main():
