@@ -31,7 +31,7 @@ class GeminiModel(StrEnum):
     """
 
     # --- Gemini 2.5 ---
-    PRO_2_5_PREVIEW = "gemini-2.5-pro-preview-03-25"
+    PRO_2_5_PREVIEW = "gemini-2.5-pro-preview-05-06"
     # --- Gemini 2.0 ---
     FLASH_2_0 = "gemini-2.0-flash"
     FLASH_2_0_STABLE = "gemini-2.0-flash-001"
@@ -228,7 +228,7 @@ def main():
     parser.add_argument("--location", default="us-central1", help="GCP location")
     parser.add_argument(
         "--model",
-        default=GeminiModel.FLASH_2_0_STABLE.value,
+        default=GeminiModel.PRO_2_5_PREVIEW.value,
         required=False,  # Make it mandatory for this simple example
         choices=model_choices,
         metavar="MODEL_IDENTIFIER",  # Helps in the --help message

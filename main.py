@@ -30,7 +30,7 @@ class GeminiModel(StrEnum):
     """
 
     # --- Gemini 2.5 ---
-    PRO_2_5_PREVIEW = "gemini-2.5-pro-preview-03-25"
+    PRO_2_5_PREVIEW = "gemini-2.5-pro-preview-05-06"
     # --- Gemini 2.0 ---
     FLASH_2_0 = "gemini-2.0-flash"
     FLASH_2_0_STABLE = "gemini-2.0-flash-001"
@@ -191,7 +191,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
 
     # Format and print the results
     results_df = convert_dicts_to_dataframe(results)
-    
+
     # Move id column to leftmost position
     if "id" in results_df.columns:
         id_col = results_df.pop("id")
@@ -229,7 +229,7 @@ def main():
     parser.add_argument("--location", default="us-central1", help="GCP location")
     parser.add_argument(
         "--model",
-        default=GeminiModel.FLASH_2_0_STABLE.value,
+        default=GeminiModel.PRO_2_5_PREVIEW.value,
         required=False,  # Make it mandatory for this simple example
         choices=model_choices,
         metavar="MODEL_IDENTIFIER",  # Helps in the --help message
@@ -248,7 +248,9 @@ def main():
     prompt = load_text_file(args.prompt_file)
 
     if instructions and prompt:
-        generate_analysis(client, model, args.image_folder, instructions, prompt, args.output)
+        generate_analysis(
+            client, model, args.image_folder, instructions, prompt, args.output
+        )
     else:
         logger.error("Error: Could not load instructions or prompt.")
 
