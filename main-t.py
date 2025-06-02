@@ -97,7 +97,9 @@ SAFETY_SETTINGS = [
 ]
 
 
-def create_generate_content_config(temperature=0.1, top_p=0.95, max_output_tokens=8192, response_modalities=["TEXT"]):
+def create_generate_content_config(
+    temperature=0, top_p=0.95, max_output_tokens=8192, response_modalities=["TEXT"]
+):
     """
     Creates and returns a GenerateContentConfig object with predefined settings.
 
@@ -178,11 +180,15 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
 
     with ThreadPoolExecutor(max_workers=4) as executor:  # Adjust max_workers as needed
         futures = [
-            executor.submit(analyze_image, client, model, image_path, instructions, prompt)
+            executor.submit(
+                analyze_image, client, model, image_path, instructions, prompt
+            )
             for image_path in image_files
         ]
 
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing images"):
+        for future in tqdm(
+            as_completed(futures), total=len(futures), desc="Processing images"
+        ):
             result = future.result()
             if result:
                 results.append(result)
@@ -196,7 +202,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
 
     # keep unique rows
     results_df = results_df.drop_duplicates(subset=["id"])
-    
+
     results_df.to_csv(output_file, index=False)
 
 
@@ -247,7 +253,9 @@ def main():
     prompt = load_text_file(args.prompt_file)
 
     if instructions and prompt:
-        generate_analysis(client, model, args.image_folder, instructions, prompt, args.output)
+        generate_analysis(
+            client, model, args.image_folder, instructions, prompt, args.output
+        )
     else:
         logger.error("Error: Could not load instructions or prompt.")
 

@@ -96,7 +96,9 @@ SAFETY_SETTINGS = [
 ]
 
 
-def create_generate_content_config(temperature=0.1, top_p=0.95, max_output_tokens=8192, response_modalities=["TEXT"]):
+def create_generate_content_config(
+    temperature=0, top_p=0.95, max_output_tokens=8192, response_modalities=["TEXT"]
+):
     """
     Creates and returns a GenerateContentConfig object with predefined settings.
 
@@ -150,7 +152,7 @@ def generate_analysis(client, model, image_folder, instructions, prompt, output_
         contents = create_gemini_content(instructions, prompt, encoded_image)
 
         generate_content_config = types.GenerateContentConfig(
-            temperature=0.1,
+            temperature=0,
             top_p=0.95,
             max_output_tokens=8192,
             response_modalities=["TEXT"],
