@@ -155,8 +155,11 @@ class Index(OrderedDict):
 
 
 def main():
+    epilog = """Example:
+    uv run index.py -d mydir -m mymapping.json -i mynewindex.json
+    """
     parser = argparse.ArgumentParser(
-        description="Create an index of files with unique post IDs."
+        description="Create an index of files with unique post IDs.", epilog=epilog
     )
     parser.add_argument(
         "--directory",
