@@ -32,8 +32,13 @@ def rename_spaces(directory):
 
 
 def main():
+    epilog = """
+    Example:
+    uv run clean_names.py mydirectory/
+    """
     parser = argparse.ArgumentParser(
-        description="Rename files and directories, replacing spaces with underscores."
+        description="Rename files and directories, replacing spaces with underscores.",
+        epilog=epilog,
     )
     parser.add_argument(
         "directory",
