@@ -23,6 +23,7 @@ image_file_extensions = (
 group_mapping = {
     "ACK_4_Whales": "ACKW",
     "Edge_Case_Tests": "MISC",
+    "Fishermen_Steward": "FIST",
     "Fishermen_Against_Offshore_Wind": "FAWM",
     "Green_Oceans": "MISC",
     "LICFA": "LICF",
@@ -32,7 +33,7 @@ group_mapping = {
     "Protect_Our_Coast_NJ_community_group": "PCNJ",
     "Protect_Our_Oceans_MA": "PCMA",
     "Saltwater_Scam": "SLSC",
-    "Save_LBI": "SLBI",  # added
+    "Save_LBI": "SLBI",
 }
 
 
