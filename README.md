@@ -74,8 +74,8 @@ We recommend using this project within a Google Cloud project using a Google Clo
         uv run main.py --image-folder myimgs/ --instructions-file myinstruction.txt --prompt-file myprompt.txt --output myoutput.csv
         ```
 
-        ### Other tooling
-        - Clean up file names: images generated using screencapture apps may generate files names with strange invisible characters across different OSs. The `clean_names.py` recursively normalizes all file and directory names in a given directory.
+    ### Other tooling
+    - **Clean up file names**: images generated using screencapture apps may generate files names with strange invisible characters across different OSs. The `clean_names.py` recursively normalizes all file and directory names in a given directory.
 
         ```bash
         $ uv run clean_names.py --help
@@ -90,6 +90,28 @@ We recommend using this project within a Google Cloud project using a Google Clo
         -h, --help  show this help message and exit
 
         Example: uv run clean_names.py mydirectory/
+        ```
+
+    - **File indexing**: Create a file index for the given `directory`. File names are encoded sequentially the provided `mapping`.
+        ```bash
+        $ uv run index.py --help
+        usage: index.py [-h] [--directory DIRECTORY] [--mapping MAPPING]
+                        [--index-file INDEX_FILE]
+
+        Create an index of files with unique post IDs.
+
+        options:
+        -h, --help            show this help message and exit
+        --directory DIRECTORY, -d DIRECTORY
+                                The directory to process. Defaults to 'assets'.
+        --mapping MAPPING, -m MAPPING
+                                The directory to process. Defaults to 'assets'.
+        --index-file INDEX_FILE, -i INDEX_FILE
+                                The name of the file to store the index. Defaults to
+                                'file_index.json'.
+
+        Example: uv run index.py -d mydir -m mymapping.json -i mynewindex.json
+        ```
 
 
     ## Limitations
