@@ -165,6 +165,12 @@ def main():
         help="The directory to process. Defaults to 'assets'.",
     )
     parser.add_argument(
+        "--mapping",
+        "-m",
+        default=None,
+        help="The directory to process. Defaults to 'assets'.",
+    )
+    parser.add_argument(
         "--index-file",
         "-i",
         default="file_index.json",
@@ -172,7 +178,7 @@ def main():
     )
     args = parser.parse_args()
 
-    process_directory(args.directory, args.index_file)
+    process_directory(args.directory, args.index_file, args.mapping)
     logger.info("Finished processing files.")
 
 
