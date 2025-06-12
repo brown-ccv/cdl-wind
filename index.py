@@ -61,10 +61,16 @@ def get_next_post_id(group_code, index):
 def assign_post_id(
     filename: str | Path,
     index: OrderedDict,
-    group_mapping: dict = group_mapping,
+    mapping: None | dict = group_mapping,
 ):
+    if mapping is None:
+        mapping = group_mapping
+    else:
+        with open(mapping, "r") as f:
+            mapping = json.load(f)
+
     try:
-        group_code = infer_group_code_from_path(filename, group_mapping)
+        group_code = infer_group_code_from_path(filename, mapping)
         if not group_code:
             logger.warning(f"Could not infer group code from path: {filename}")
             return None
@@ -83,7 +89,9 @@ def is_image_file(file_path):
     return all([file_path.is_file(), file_path.suffix.lower() in image_file_extensions])
 
 
-def process_directory(directory: str | Path, index_file: str | Path):
+def process_directory(
+    directory: str | Path, index_file: str | Path, mapping: Path | None
+):
     directory_path = Path(directory)
     index_file_path = Path(index_file)
 
@@ -98,7 +106,7 @@ def process_directory(directory: str | Path, index_file: str | Path):
             logger.info("Processing file: %s", file_path)
             original_filename = str(file_path.relative_to(directory_path))
             if original_filename not in index:  # Only process new files
-                post_id = assign_post_id(original_filename, index)
+                post_id = assign_post_id(original_filename, index, mapping)
                 if post_id:
                     index[original_filename] = post_id
 
@@ -115,7 +123,9 @@ class Index(OrderedDict):
 
     @staticmethod
     def process_directory(
-        directory: str | Path = "assets", index_file: str | Path = "file_index.json"
+        directory: str | Path = "assets",
+        index_file: str | Path = "file_index.json",
+        mapping=None,
     ):
         directory_path = Path(directory)
         index_file_path = Path(index_file)
@@ -134,7 +144,9 @@ class Index(OrderedDict):
                 logger.debug("Processing file: %s", file_path)
                 original_filename = str(file_path.relative_to(directory_path))
                 if original_filename not in index:
-                    filename, post_id = assign_post_id(original_filename, index)
+                    filename, post_id = assign_post_id(
+                        original_filename, index, mapping
+                    )
                     if filename and post_id:
                         index[original_filename] = post_id
 
