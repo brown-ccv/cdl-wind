@@ -21,18 +21,18 @@ image_file_extensions = (
 )
 
 group_mapping = {
-    "New England Offshore Wind Discussion": "NEOW",
-    "Protect Our Coast - NJ Community Group": "PCNJ",
-    "Protect Our Coast NJ Community Group": "PCNJ",
-    "Protect Our Oceans MA": "PCMA",
-    "Protect Our Coast - LINY": "PCLI",
-    "Protect Our Coast LINY": "PCLI",
-    "Saltwater Scam": "SLSC",
-    "Fishermen Steward": "FIST",
-    "Save LBI": "SLBI",
-    "LICFA": "LICF",  # Assuming LICFA maps to LICF as there's no separate code
-    "ACK 4 Whales": "ACKW",
-    "Fishermen against offshore wind: Maine Group": "FAWM",
+    "ACK_4_Whales": "ACKW",
+    "Edge_Case_Tests": "MISC",
+    "Fishermen_Against_Offshore_Wind": "FAWM",
+    "Green_Oceans": "MISC",
+    "LICFA": "LICF",
+    "New_England_Fishermen_s_Stewardship_Association": "NEFS",  # added
+    "New_England_Offshore_Wind_Discussion": "NEOW",
+    "Protect_Our_Coast_LINY": "PCLI",
+    "Protect_Our_Coast_NJ_community_group": "PCNJ",
+    "Protect_Our_Oceans_MA": "PCMA",
+    "Saltwater_Scam": "SLSC",
+    "Save_LBI": "SLBI",  # added
 }
 
 
