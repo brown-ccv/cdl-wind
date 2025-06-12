@@ -212,6 +212,7 @@ def main():
     model = args.model
     instructions = load_text_file(args.instructions_file)
     prompt = load_text_file(args.prompt_file)
+    logger.info("Using model %s", model)
 
     if instructions and prompt:
         generate_analysis(
