@@ -1,10 +1,11 @@
 import json
-import re
-from pprint import pp
 import logging
+import re
+from functools import reduce
+from pprint import pp
 
 import pandas as pd
-from functools import reduce
+from json_repair import repair_json
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ def parse_json_like_output(output_text, image_name=None):
                 return None
 
         # Replace single quotes with double quotes for valid JSON
-        output_text = output_text.replace("'", '"')
+        output_text = repair_json(output_text.replace("'", '"'))
 
         # Load the string as a JSON object
         data = json.loads(output_text)
